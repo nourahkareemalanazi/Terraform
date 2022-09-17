@@ -30,7 +30,7 @@ pipeline {
             steps {
                 sh 'terraform init '
                 sh 'terraform plan '
-                sh 'terraform show -no-color tfplan > tfplan.txt'
+               
             }
         }
        
