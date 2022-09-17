@@ -10,22 +10,22 @@ pipeline {
 
 
      environment {
-        AWS_ACCESS_KEY_ID     = credentials('AKIAWRYVSNSQCQREYXO2')
-        AWS_SECRET_ACCESS_KEY = credentials('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')
+        AWS_ACCESS_KEY_ID     = credentials('AWSAccessKeyId')
+        AWS_SECRET_ACCESS_KEY = credentials('AWSSecretKey')
     }
 
 
-    stages {
-        stage('Plan') {
-            steps {
-                script {
-                    currentBuild.displayName = params.version
-                }
-                sh 'terraform init -input=false'
-                sh 'terraform workspace select ${environment}'
-                sh "terraform plan -input=false -out tfplan -var 'version=${params.version}' --var-file=environments/${params.environment}.tfvars"
-                sh 'terraform show -no-color tfplan > tfplan.txt'
-            }
+    stages { 
+        stage('Plan') { 
+            steps { 
+                script { 
+                    currentBuild.displayName = params.version 
+                } 
+                sh 'terraform init -input=false' 
+                sh 'terraform workspace select ${environment}' 
+                sh "terraform plan -input=false -out tfplan -var 'version=${params.version}' --var-file=environments/${params.environment}.tfvars" 
+                sh 'terraform show -no-color tfplan > tfplan.txt' 
+            } 
         }
 
         stage('Approval') {
