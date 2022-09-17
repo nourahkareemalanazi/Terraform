@@ -18,8 +18,7 @@ pipeline {
     stages {
         stage('checkout') {
             steps {
-                sh 'mkdir terraform1'
-                sh 'cd terraform1'
+                sh'cd terraform'
                 sh "git clone https://github.com/nourahkareemalanazi/Terraform.git"
             }
             }
