@@ -15,45 +15,76 @@ pipeline {
     }
 
 
-    stages { 
-        stage('Plan') { 
-            steps { 
-                script { 
-                    currentBuild.displayName = params.version 
-                } 
-                sh 'terraform init -input=false' 
-                sh 'terraform workspace select ${environment}' 
-                sh "terraform plan -input=false -out tfplan -var 'version=${params.version}' --var-file=environments/${params.environment}.tfvars" 
-                sh 'terraform show -no-color tfplan > tfplan.txt' 
-            } 
-        }
+    stages {
+        stage('checkout') {
+            steps {
+                 script{
+                        dir("terraform")
+                        {
+                            git "https://github.com/hellokvn/terraform-aws-ec2-nginx.git"
+                        }
+                    }
+                }
+            }
 
-        stage('Approval') {
+        stage('Plan') {
             when {
                 not {
-                    equals expected: true, actual: params.autoApprove
+                    equals expected: true, actual: params.destroy
                 }
             }
-
+            
             steps {
-                script {
-                    def plan = readFile 'tfplan.txt'
-                    input message: "Do you want to apply the plan?",
-                        parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
-                }
+                sh 'terraform init -input=false'
+                sh 'terraform workspace select ${environment} || terraform workspace new ${environment}'
+
+                sh "terraform plan -input=false -out tfplan "
+                sh 'terraform show -no-color tfplan > tfplan.txt'
             }
         }
+        stage('Approval') {
+           when {
+               not {
+                   equals expected: true, actual: params.autoApprove
+               }
+               not {
+                    equals expected: true, actual: params.destroy
+                }
+           }
+           
+                
+            
+
+           steps {
+               script {
+                    def plan = readFile 'tfplan.txt'
+                    input message: "Do you want to apply the plan?",
+                    parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
+               }
+           }
+       }
 
         stage('Apply') {
+            when {
+                not {
+                    equals expected: true, actual: params.destroy
+                }
+            }
+            
             steps {
                 sh "terraform apply -input=false tfplan"
             }
         }
-    }
-
-    post {
-        always {
-            archiveArtifacts artifacts: 'tfplan.txt'
+        
+        stage('Destroy') {
+            when {
+                equals expected: true, actual: params.destroy
+            }
+        
+        steps {
+           sh "terraform destroy --auto-approve"
         }
     }
+
+  }
 }
