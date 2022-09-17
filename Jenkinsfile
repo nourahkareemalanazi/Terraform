@@ -18,9 +18,9 @@ pipeline {
     stages {
         stage('checkout') {
             steps {
-                sh'pwd'
-                sh'cd terraform'
-                sh "git clone https://github.com/nourahkareemalanazi/Terraform.git"
+                
+             
+                sh 'git clone https://github.com/nourahkareemalanazi/Terraform.git'
             }
             }
 
@@ -28,40 +28,22 @@ pipeline {
             
             
             steps {
-                sh 'terraform init -input=false'
-                sh 'terraform workspace select ${environment} || terraform workspace new ${environment}'
-
-                sh "terraform plan -input=false -out tfplan "
+                sh 'terraform init '
+                sh 'terraform plan '
                 sh 'terraform show -no-color tfplan > tfplan.txt'
             }
         }
        
-           
-                
-          
-           steps {
-               script {
-                    def plan = readFile 'tfplan.txt'
-                    input message: "Do you want to apply the plan?",
-                    parameters: [text(name: 'Plan', description: 'Please review the plan', defaultValue: plan)]
-               }
-           }
-       }
+         
 
         stage('Apply') {
             
             
             steps {
-                sh "terraform apply -input=false tfplan"
+                sh "terraform apply "
             }
         }
         
-        stage('Destroy') {
-           
-        steps {
-           sh "terraform destroy --auto-approve"
-        }
-    }
 
   }
 }
