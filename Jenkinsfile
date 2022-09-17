@@ -18,13 +18,10 @@ pipeline {
     stages {
         stage('checkout') {
             steps {
-                 script{
-                        dir("terraform")
-                        {
-                            git "https://github.com/hellokvn/terraform-aws-ec2-nginx.git"
-                        }
-                    }
-                }
+                sh 'mkdir terraform'
+                sh 'cd terraform'
+                sh "git clone https://github.com/nourahkareemalanazi/Terraform.git "
+            }
             }
 
         stage('Plan') {
