@@ -20,14 +20,14 @@ pipeline {
         }
         stage ("terraform fmt") {
             steps {
-                dir('cloudfront-build') {
+               //dir('cloudfront-build') {
                 sh 'terraform fmt'
                 }
             }
         }
         stage ("terraform validate") {
             steps {
-                dir('cloudfront-build') {
+                //dir('cloudfront-build') {
                 sh 'terraform validate'
                 }
             }
@@ -35,7 +35,7 @@ pipeline {
 
         stage('terraform Plan') {
             steps{
-                dir('cloudfront-build') 
+                //dir('cloudfront-build') 
                 {
                 sh 'terraform plan'
                 }
@@ -44,7 +44,7 @@ pipeline {
 
         stage('terraform apply') {
             steps{
-                dir('cloudfront-build') 
+                //dir('cloudfront-build') 
                 {
                 sh 'terraform apply --auto-approve'
                 }
