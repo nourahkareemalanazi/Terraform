@@ -6,7 +6,7 @@ pipeline {
         stage('checkout') {
             steps {
                 
-           
+                sh'pwd'
                 sh 'git clone https://github.com/nourahkareemalanazi/Terraform.git'
             }
             }
